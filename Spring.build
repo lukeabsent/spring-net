@@ -113,13 +113,13 @@ Commandline Examples:
   <property name="spring.nonredistdir" value="${spring.basedir}\..\..\nonredist"/>
   <property name="tool.dir" value="${project::get-base-directory()}\build-support\tools"/>
   <property name="nuget.exe" value="${tool.dir}\NuGet\NuGet.exe"/>
-  
+
   <!--Support for Windows XP in other languages. In Portuguese, for example, is "c:\Arquivos de Programs"-->
   <property name="programfiles" value="C:\Program Files"/>
   <property name="programfilesx86" value="C:\Program Files (x86)"/>
   <property name="programfiles" value="${environment::get-variable('ProgramFiles')}" failonerror="false"/>
   <property name="programfilesx86" value="${environment::get-variable('ProgramFiles(x86)')}" failonerror="false"/>
-  
+
   <!-- build SDK docs with NDoc -->
   <property name="doc.sdk" value="false"/>
 
@@ -139,7 +139,7 @@ Commandline Examples:
   <property name="project.build.config" value="debug"/>
   <property name="project.build.package" value="false"/>
   <property name="project.build.sign" value="false" overwrite="false" />
-  
+
   <property name="test.withcoverage" value="true" overwrite="false" />
   <!-- what coverage tool to use: ncover or opencover -->
   <property name="test.coverage.tool" value="opencover" overwrite="false" />
@@ -167,7 +167,7 @@ Commandline Examples:
 
   <property name="package.buildincrement" value="000" overwrite="false"/>
   <call target="check-package.passedbuildincrement" />
-  
+
   <sysinfo failonerror="false" />
 
   <property name="project.company" value="SpringSource"/>
@@ -195,7 +195,7 @@ Commandline Examples:
 		<property name="package.buildincrement" value="${string::substring(package.passedbuildincrement, string::get-length(package.passedbuildincrement) -3, 3)}" overwrite="true" />
 	  </if>
   </target>
-  
+
   <!-- call target="set-framework-configuration"/ -->
   <call target="set-user-overrides"/>
 
@@ -313,7 +313,7 @@ Commandline Examples:
     <call target="compile-build-3.5"/>
     <call target="compile-build-4.0"/>
     <call target="compile-build-4.5"/>
-  
+
     <call target="compile-build-mono-2.0"/>
 
   </target>
@@ -321,12 +321,12 @@ Commandline Examples:
 
   <target name="restore-nuget-packages" description="Restores NuGet packages that solution(s) reference">
 
-  	  <exec 
+  	  <exec
 		  program="${nuget.exe}"
-		  commandline="restore .nuget/packages.config -SolutionDirectory ${spring.basedir}" 
+		  commandline="restore .nuget/packages.config -SolutionDirectory ${spring.basedir}"
 		  workingdir="${spring.basedir}"
 		  failonerror="true" />
-	  
+
       <foreach item="File" property="filename">
       <in>
         <items basedir="${spring.basedir}">
@@ -380,17 +380,17 @@ Commandline Examples:
 		<if test="${directory::exists(test.bin.dir) == false}">
           <property name="test.bin.dir" value="${path}/net461" />
 		</if>
-		
+
         <property name="test.assemblyname" value="${string::substring(path, string::last-index-of(path, '\') + 1, string::get-length(path) - string::last-index-of(path, '\') - 1)}" />
         <property name="test.assemblyfile" value="${test.assemblyname}.dll" />
         <property name="test.assemblyname.tocover" value="${string::substring(test.assemblyname,0,string::last-index-of(test.assemblyname, '.Tests') )}" />
         <call target="common.run-tests" />
       </do>
-    </foreach>	
-	
+    </foreach>
+
 	<!-- run .NET Core separately for now -->
     <call target="compile-test-netcore" />
-	
+
     <!-- build coverage summary -->
 	<exec program="${tool.dir}/ncoverexplorer/ncoverexplorer.console.exe" workingdir="${current.bin.dir}" failonerror="false" if="${test.coverage.tool == 'ncover' and test.withcoverage}">
 		<arg value="/xml:&quot;${current.bin.dir}/TestCoverageSummary.xml&quot;" />
@@ -428,18 +428,18 @@ Commandline Examples:
           <arg line="test" />
           <arg line="/nodeReuse:false" />
           <arg line="-c ${current.build.config}" />
-          <arg line="-f net5.0" />
+          <arg line="-f net6.0" />
           <arg line="${file}" />
 		</exec>
       </do>
-    </foreach>	
+    </foreach>
   </target>
-  
+
   <target name="compile-net-4.5" description="Builds .NET Framework 4.5 version"
         depends="set-net-4.5-runtime-configuration, check-spring-basedir, restore-nuget-packages">
-	
+
 	<property name="test.withcoverage" value="false" overwrite="true"/>
-	
+
 	<if test="${property::exists('mstest.exe')}">
 		<property name="mstest.exe.current" value="${property::get-value('mstest.exe')}" />
 		<!-- <property name="mstest.exe.current" value="${string::replace(property::get-value('mstest.exe'), 'Microsoft Visual Studio 10.0', 'Microsoft Visual Studio 9.0')}" /> -->
@@ -448,7 +448,7 @@ Commandline Examples:
 		<property name="vs-net.mstest.bin.dir.current" value="${property::get-value('vs-net.mstest.bin.dir')}" />
 		<!-- <property name="vs-net.mstest.bin.dir.current" value="${string::replace(property::get-value('vs-net.mstest.bin.dir'), 'Microsoft Visual Studio 10.0', 'Microsoft Visual Studio 9.0')}" /> -->
 	</if>
-	
+
 	<call target="copykeys" if="${project.build.sign}"/>
     <call target="common.generate-assemblyinfo"/>
 
@@ -458,7 +458,7 @@ Commandline Examples:
     <property name="build-msmq" value="true" overwrite="true" />
     <property name="build-msmq-tests" value="true" overwrite="true" />
     <property name="build-velocity" value="true" overwrite="true" />
-	
+
     <property name="lib.dir" value="${spring.basedir}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}"/>
 	<if test="${nant.settings.currentframework == 'net-4.5'}">
 		<property name="lib.dir" value="${spring.basedir}/lib/net/4.0"/>
@@ -474,11 +474,11 @@ Commandline Examples:
       <!--Specifying mandatory property in SDK 7-->
       <arg line='/property:Platform="Any CPU"'/>
     </exec>
-	
+
 	<call target="copylibs" />
     <call target="compile-test" />
-  </target>  
-  
+  </target>
+
   <target name="compile-mono-2.0" description="Builds MONO Framework 2.0 version"
           depends="set-mono-2.0-runtime-configuration, check-spring-basedir">
     <call target="copykeys" if="${project.build.sign}"/>
@@ -538,7 +538,7 @@ Commandline Examples:
 	<echo message="Current lib20 dir = ${lib20.dir}"/>
     <echo message="Current lib dir = ${lib.dir}"/>
 	<mkdir dir="${lib.dir}" failonerror="false" />
-	
+
     <copy todir="${lib.dir}" verbose="${copy-verbose}">
       <fileset basedir="${lib20.dir}">
         <include name="*.dll"/>
@@ -549,7 +549,7 @@ Commandline Examples:
       </fileset>
     </copy>
   </target>
- 
+
   <!-- Top level targets -->
   <!-- target for developers to do just debug build and test everything in CVS -->
   <target name="test" description="build and test">
@@ -557,7 +557,7 @@ Commandline Examples:
     <property name="nant.target.root.name" value="build"/>
     <call target="build-all-function"/>
   </target>
-  
+
   <target name="build-4.5">
     <call target="set-build-namespaces-release"/>
     <echo message="------------------------"/>
@@ -574,7 +574,7 @@ Commandline Examples:
       <call target="set-release-build-configuration"/>
       <call target="compile-build-4.5"/>
     </if>
-  </target>  
+  </target>
 
   <target name="build-mono-2.0" if="false">
 
@@ -720,9 +720,9 @@ Commandline Examples:
     <!-- build all binaries -->
     <call target="build-all-function"/>
     <call target="package-cvs"/>
-	
+
 	<call target="upload-cvs-release"/>
-	
+
   </target>
 
   <target name="build-all-function" description="Build what is in cvs taking into account approrpiate clr versions and root target name">
@@ -731,7 +731,7 @@ Commandline Examples:
     <call target="build-solutions" />
 
   </target>
-  
+
   <target name="daily-build-4.5">
     <call target="set-build-namespaces-all"/>
     <call target="set-package-configuration"/>
@@ -826,13 +826,13 @@ Commandline Examples:
     <exec workingdir="${spring.basedir}" program="cmd.exe" verbose="true">
       <arg value="/c powershell-invoker .\s3-nightly-upload.ps1 -srcFolderPath ${package.dir} -srcFilename ${filetoupload}" />
     </exec>
-	
+
 	<echo message="Deleting outdated files on AmazonS3..."/>
 	<exec workingdir="${spring.basedir}" program="cmd.exe" verbose="true">
       <arg value="/c powershell-invoker .\s3-nightly-delete-old-files.ps1 -leaveLatest 10" />
     </exec>
 
-	
+
   </target>
 
   <target name="package-release-files" depends="set-package-configuration">
@@ -1036,11 +1036,11 @@ Commandline Examples:
           <include name="*/*/Spring.Data.NHibernate*.dll"/>
           <include name="*/*/Spring.Data.NHibernate*.xml"/>
           <include name="*/*/Spring.Data.NHibernate*.pdb"/>
-		  
+
           <include name="*/*/Spring.Web.dll"/>
           <include name="*/*/Spring.Web.xml"/>
           <include name="*/*/Spring.Web.pdb"/>
-		  
+
 		  <include name="*/*/Spring.Web.Mvc5.dll"/>
           <include name="*/*/Spring.Web.Mvc5.xml"/>
           <include name="*/*/Spring.Web.Mvc5.pdb"/>
@@ -1087,7 +1087,7 @@ Commandline Examples:
 
         </fileset>
       </copy>
-      
+
    </if>
 
     <if test="${property::exists('build.allnamespaces') and build.allnamespaces}">
@@ -1285,7 +1285,7 @@ Commandline Examples:
       <include name="src/Spring/Spring.Testing.Microsoft/**"/>
       <include name="src/Spring/CommonAssemblyInfo.cs"/>
       <include name="src/Spring/Spring.Web.Conversation.NHibernate5/**"/>
-      
+
       <include name="test/Spring/Spring.Core.Tests/**"/>
       <include name="test/Spring/Spring.Aop.Tests/**"/>
       <include name="test/Spring/Spring.Web.Tests/**"/>
@@ -1293,8 +1293,8 @@ Commandline Examples:
       <include name="test/Spring/Spring.Services.Tests/**"/>
       <include name="test/Spring/Spring.Data.Tests/**"/>
       <include name="test/Spring/Spring.Data.Integration.Tests/**"/>
-      <include name="test/Spring/Spring.Data.NHibernate5.Integration.Tests/**"/>	  
-	  <include name="test/Spring/Spring.Data.NHibernate5.NestedTxSuspension.Integration.Tests/**"/>	  
+      <include name="test/Spring/Spring.Data.NHibernate5.Integration.Tests/**"/>
+	  <include name="test/Spring/Spring.Data.NHibernate5.NestedTxSuspension.Integration.Tests/**"/>
 	  <include name="test/Spring/Spring.Data.NHibernate5.Tests/**"/>
       <include name="test/Spring/Spring.Messaging.Tests/**"/>
       <include name="test/Spring/Spring.Messaging.Nms.Tests/**"/>
@@ -1306,7 +1306,7 @@ Commandline Examples:
       <include name="test/Spring/Spring.Testing.Microsoft.Tests/**"/>
       <include name="test/Spring/CommonAssemblyInfo.cs"/>
       <include name="test/Spring/Spring.Web.Conversation.NHibernate5.Tests/**"/>
-      
+
       <include name="examples/Spring/Spring.Examples.build"/>
       <include name="examples/Spring/Spring.AopQuickStart/**"/>
       <include name="examples/Spring/Spring.DataQuickStart/**"/>
@@ -1371,24 +1371,24 @@ Commandline Examples:
       </properties>
     </nant>
   </target>
-  
-  
+
+
   <target name="check-nuget-package-dir">
     <fail message="The NuGet package directory has not been specified."
           if="${not property::exists('nuget.package.dir')}"/>
     <!-- <mkdir dir="${nuget.package.dir}"/> -->
   </target>
-  
-  
+
+
 <target name="clean-nuget-package-dir" depends="check-nuget-package-dir" description="Cleans the NuGet package directory">
     <echo message="Cleaning the ${nuget.package.dir} NuGet package directory."/>
-    
+
 	<delete failonerror="false" if="${directory::exists(nuget.package.dir)}">
 	  <fileset basedir="${nuget.package.dir}">
-		<include name="*.nupkg"/> 
-	  </fileset>           
-    </delete>   
-		
+		<include name="*.nupkg"/>
+	  </fileset>
+    </delete>
+
 	<mkdir dir="${nuget.package.dir}" if="${directory::exists(nuget.package.dir)}"/>
   </target>
 
@@ -1396,19 +1396,19 @@ Commandline Examples:
 
 	<!-- assume version of nuget package matches version of assemblies contained within it -->
 	<property name="nuget.package.version" value="${package.version}" />
-	
+
 	<!-- if suffix is passed in, use it -->
 	<property name="nuget.package.version" value="${package.version + '-' + nuget.version.suffix}" if="${property::exists('nuget.version.suffix')}" />
 
 </target>
-  
+
 <target name="package-nuget" depends="set-nuget-package-version,update-nuspec-metadata">
 
 	<property name="nuget.package.dir" value="${spring.basedir}\nuget-packages" />
-	
+
 	<call target="clean-nuget-package-dir" />
 	<call target="check-package-version" />
-	
+
 	<foreach item="File" property="filename">
 		<in>
 			<items basedir="${spring.basedir}/src/Spring">
@@ -1417,7 +1417,7 @@ Commandline Examples:
 			</items>
 		</in>
 		<do>
-			<echo message="Generating NuGet Package from nuspec file: ${filename}" />  
+			<echo message="Generating NuGet Package from nuspec file: ${filename}" />
 			<exec program="dotnet" verbose="true">
 			  <arg value="pack" />
 			  <arg value="-c" />
@@ -1432,7 +1432,7 @@ Commandline Examples:
 	</foreach>
 </target>
 
-<target name="update-nuspec-metadata" depends="set-nuget-package-version">  
+<target name="update-nuspec-metadata" depends="set-nuget-package-version">
 </target>
 
 
